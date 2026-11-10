@@ -1,17 +1,13 @@
-import 'dart:math' as math;
-
-import 'inscription_page.dart';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-// Les couleurs (fondNoir, carteNoire, jaunePrincipal, texteBlanc, texteGris)
-// sont definies dans le fichier de la page Bienvenue.
-// Remplacez 'main.dart' par le nom de ce fichier si besoin.
 import 'main.dart';
+import 'inscription_page.dart';
+import 'accueil_page.dart';
 
-// ==================================
-// PAGE CONNEXION
-// ==================================
+// =====================================
+// PAGE 2 : CONNEXION
+// =====================================
 
 class ConnexionPage extends StatefulWidget {
   const ConnexionPage({super.key});
@@ -21,461 +17,116 @@ class ConnexionPage extends StatefulWidget {
 }
 
 class _ConnexionPageState extends State<ConnexionPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController motDePasseController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
-  bool motDePasseCache = true;
-  bool resterConnecte = false;
+  bool cacherMotDePasse = true;
+  bool souvenir = false;
 
   @override
   void dispose() {
     emailController.dispose();
-    motDePasseController.dispose();
+    passwordController.dispose();
     super.dispose();
   }
 
-  // Retour a la page Bienvenue.
-  void retour() {
-    Navigator.pop(context);
-  }
-
-  // A remplacer plus tard : verification du compte puis ouverture de l'accueil.
+  // CONNEXION PROVISOIRE
   void seConnecter() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Connexion : page accueil a venir')),
-    );
-  }
-
-  // A remplacer plus tard : ouverture de la page Inscription.
-  void creerCompte() {
-    Navigator.push(
+    Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const InscriptionPage()),
+      MaterialPageRoute(builder: (context) => const AccueilPage()),
+      (route) => false,
     );
   }
 
-  void motDePasseOublie() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Mot de passe oublie : a venir')),
-    );
+  void afficherMessage(String texte) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(texte)));
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: fondNoir,
-
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: SizedBox(
-                height: math.max(720.0, constraints.maxHeight),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 28,
-                    vertical: 18,
-                  ),
-
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // =========================
-                      // 0. BOUTON RETOUR (en haut)
-                      // =========================
-                      Tooltip(
-                        message: 'Retour',
-                        child: InkWell(
-                          onTap: retour,
-                          customBorder: const CircleBorder(),
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: carteNoire,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: texteGris.withAlpha(50),
-                                width: 1,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.chevron_left_rounded,
-                              color: texteBlanc,
-                              size: 30,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // =========================
-                      // 1. TITRE
-                      // =========================
-                      const Text(
-                        'Connexion',
-                        style: TextStyle(
-                          color: texteBlanc,
-                          fontSize: 38,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      const SizedBox(height: 8),
-
-                      const Text(
-                        'Connectez-vous pour retrouver vos trajets.',
-                        style: TextStyle(
-                          color: texteGris,
-                          fontSize: 16,
-                          height: 1.4,
-                        ),
-                      ),
-
-                      const SizedBox(height: 32),
-
-                      // =========================
-                      // 2. CHAMP EMAIL
-                      // =========================
-                      ChampTexte(
-                        icone: Icons.mail_outline_rounded,
-                        texte: 'Email',
-                        controller: emailController,
-                        clavier: TextInputType.emailAddress,
-                      ),
-
-                      const SizedBox(height: 14),
-
-                      // =========================
-                      // 3. CHAMP MOT DE PASSE
-                      // =========================
-                      ChampTexte(
-                        icone: Icons.lock_outline_rounded,
-                        texte: 'Mot de passe',
-                        controller: motDePasseController,
-                        cache: motDePasseCache,
-                        suffixe: IconButton(
-                          tooltip: motDePasseCache
-                              ? 'Afficher le mot de passe'
-                              : 'Masquer le mot de passe',
-                          onPressed: () {
-                            setState(() {
-                              motDePasseCache = !motDePasseCache;
-                            });
-                          },
-                          icon: Icon(
-                            motDePasseCache
-                                ? Icons.visibility_outlined
-                                : Icons.visibility_off_outlined,
-                            color: texteGris,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 14),
-
-                      // =========================
-                      // 4. SE SOUVENIR + MOT DE PASSE OUBLIE
-                      // =========================
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              setState(() {
-                                resterConnecte = !resterConnecte;
-                              });
-                            },
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                AnimatedContainer(
-                                  duration: const Duration(milliseconds: 150),
-                                  width: 22,
-                                  height: 22,
-                                  decoration: BoxDecoration(
-                                    color: resterConnecte
-                                        ? jaunePrincipal
-                                        : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(7),
-                                    border: Border.all(
-                                      color: jaunePrincipal.withAlpha(120),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: resterConnecte
-                                      ? const Icon(
-                                          Icons.check_rounded,
-                                          size: 16,
-                                          color: Colors.black,
-                                        )
-                                      : null,
-                                ),
-
-                                const SizedBox(width: 10),
-
-                                const Text(
-                                  'Se souvenir de moi',
-                                  style: TextStyle(
-                                    color: texteGris,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          TextButton(
-                            onPressed: motDePasseOublie,
-                            child: const Text(
-                              'Mot de passe oublié ?',
-                              style: TextStyle(
-                                color: jaunePrincipal,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      // =========================
-                      // 5. BOUTON SE CONNECTER
-                      // =========================
-                      SizedBox(
-                        width: double.infinity,
-                        height: 58,
-
-                        child: ElevatedButton(
-                          onPressed: seConnecter,
-
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: jaunePrincipal,
-                            foregroundColor: Colors.black,
-                            elevation: 0,
-
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-
-                          child: const Text(
-                            'Se connecter',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // =========================
-                      // 6. SEPARATEUR "OU"
-                      // =========================
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: texteGris.withAlpha(60),
-                            ),
-                          ),
-
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 14),
-                            child: Text(
-                              'ou',
-                              style: TextStyle(color: texteGris, fontSize: 14),
-                            ),
-                          ),
-
-                          Expanded(
-                            child: Container(
-                              height: 1,
-                              color: texteGris.withAlpha(60),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // =========================
-                      // 7. BOUTONS GOOGLE ET FACEBOOK
-                      // =========================
-                      BoutonSocial(
-                        texte: 'Continuer avec Google',
-                        logo: const LogoGoogle(),
-                        onTap: seConnecter,
-                      ),
-
-                      const SizedBox(height: 14),
-
-                      BoutonSocial(
-                        texte: 'Continuer avec Facebook',
-                        logo: const LogoFacebook(),
-                        onTap: seConnecter,
-                      ),
-
-                      const Spacer(),
-
-                      // =========================
-                      // 8. CREER UN COMPTE
-                      // =========================
-                      Center(
-                        child: Wrap(
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: 8,
-                          children: [
-                            const Text(
-                              'Pas encore de compte ?',
-                              style: TextStyle(color: texteGris, fontSize: 16),
-                            ),
-
-                            GestureDetector(
-                              onTap: creerCompte,
-                              child: const Text(
-                                'Créer un compte',
-                                style: TextStyle(
-                                  color: jaunePrincipal,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-// ==================================
-// WIDGET : CHAMP DE TEXTE
-// ==================================
-
-class ChampTexte extends StatelessWidget {
-  final IconData icone;
-  final String texte;
-  final TextEditingController controller;
-  final bool cache;
-  final TextInputType? clavier;
-  final Widget? suffixe;
-
-  const ChampTexte({
-    super.key,
-    required this.icone,
-    required this.texte,
-    required this.controller,
-    this.cache = false,
-    this.clavier,
-    this.suffixe,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  // CHAMP DE TEXTE
+  Widget champConnexion(
+    String titre,
+    IconData icone,
+    TextEditingController controller, {
+    bool password = false,
+    TextInputType clavier = TextInputType.text,
+  }) {
     return Container(
-      height: 58,
-      padding: const EdgeInsets.only(left: 18, right: 8),
-
+      height: 57,
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(left: 18, right: 7),
       decoration: BoxDecoration(
         color: carteNoire,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: texteGris.withAlpha(50), width: 1),
+        border: Border.all(color: texteGris.withAlpha(40)),
       ),
-
       child: Row(
         children: [
-          Icon(icone, color: jaunePrincipal, size: 24),
+          Icon(icone, color: jaunePrincipal, size: 23),
 
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
 
           Expanded(
             child: TextField(
               controller: controller,
-              obscureText: cache,
               keyboardType: clavier,
+              obscureText: password && cacherMotDePasse,
               cursorColor: jaunePrincipal,
-
-              style: const TextStyle(color: texteBlanc, fontSize: 17),
-
+              style: const TextStyle(color: texteBlanc, fontSize: 16),
               decoration: InputDecoration(
                 border: InputBorder.none,
-                hintText: texte,
-                hintStyle: const TextStyle(color: texteBlanc, fontSize: 17),
+                hintText: titre,
+                hintStyle: const TextStyle(color: texteGris, fontSize: 15),
               ),
             ),
           ),
 
-          ?suffixe,
+          if (password)
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  cacherMotDePasse = !cacherMotDePasse;
+                });
+              },
+              icon: Icon(
+                cacherMotDePasse
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                color: texteGris,
+              ),
+            ),
         ],
       ),
     );
   }
-}
 
-// ==================================
-// WIDGET : BOUTON GOOGLE / FACEBOOK
-// ==================================
-
-class BoutonSocial extends StatelessWidget {
-  final String texte;
-  final Widget logo;
-  final VoidCallback onTap;
-
-  const BoutonSocial({
-    super.key,
-    required this.texte,
-    required this.logo,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  // BOUTON GOOGLE OU FACEBOOK
+  Widget boutonSocial(String titre, Widget logo, VoidCallback action) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
-
+      height: 55,
       child: OutlinedButton(
-        onPressed: onTap,
-
+        onPressed: action,
         style: OutlinedButton.styleFrom(
           backgroundColor: carteNoire,
-          side: BorderSide(color: texteGris.withAlpha(50)),
-
+          side: BorderSide(color: texteGris.withAlpha(40)),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
         ),
-
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             logo,
-
-            const SizedBox(width: 12),
-
-            Text(
-              texte,
-              style: const TextStyle(
-                color: texteBlanc,
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
+            const SizedBox(width: 13),
+            Flexible(
+              child: Text(
+                titre,
+                style: const TextStyle(
+                  color: texteBlanc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],
@@ -483,125 +134,244 @@ class BoutonSocial extends StatelessWidget {
       ),
     );
   }
+
+  // =====================================
+  // DESIGN PRINCIPAL
+  // =====================================
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: fondNoir,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 430),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 27, vertical: 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // RETOUR
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: IconButton.styleFrom(backgroundColor: carteNoire),
+                    icon: const Icon(
+                      Icons.chevron_left_rounded,
+                      color: texteBlanc,
+                      size: 28,
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // TITRE
+                  const Text(
+                    'Connexion',
+                    style: TextStyle(
+                      color: texteBlanc,
+                      fontSize: 38,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 7),
+
+                  const Text(
+                    'Connectez-vous pour retrouver vos trajets.',
+                    style: TextStyle(color: texteGris, fontSize: 15),
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // EMAIL
+                  champConnexion(
+                    'Email',
+                    Icons.mail_outline_rounded,
+                    emailController,
+                    clavier: TextInputType.emailAddress,
+                  ),
+
+                  // MOT DE PASSE
+                  champConnexion(
+                    'Mot de passe',
+                    Icons.lock_outline_rounded,
+                    passwordController,
+                    password: true,
+                  ),
+
+                  // SE SOUVENIR DE MOI
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: souvenir,
+                        activeColor: jaunePrincipal,
+                        checkColor: Colors.black,
+                        side: const BorderSide(color: jaunePrincipal),
+                        onChanged: (valeur) {
+                          setState(() {
+                            souvenir = valeur ?? false;
+                          });
+                        },
+                      ),
+
+                      const Expanded(
+                        child: Text(
+                          'Se souvenir de moi',
+                          style: TextStyle(color: texteGris, fontSize: 12),
+                        ),
+                      ),
+
+                      TextButton(
+                        onPressed: () {
+                          afficherMessage('Mot de passe oublié : à venir');
+                        },
+                        child: const Text(
+                          'Mot de passe oublié ?',
+                          style: TextStyle(color: jaunePrincipal, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // SE CONNECTER
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: seConnecter,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: jaunePrincipal,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        'Se connecter',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // SEPARATEUR
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: texteGris.withAlpha(60))),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        child: Text('ou', style: TextStyle(color: texteGris)),
+                      ),
+                      Expanded(child: Divider(color: texteGris.withAlpha(60))),
+                    ],
+                  ),
+
+                  const SizedBox(height: 22),
+
+                  // GOOGLE
+                  boutonSocial('Continuer avec Google', const LogoGoogle(), () {
+                    afficherMessage('Connexion Google à venir');
+                  }),
+
+                  const SizedBox(height: 14),
+
+                  // FACEBOOK
+                  boutonSocial(
+                    'Continuer avec Facebook',
+                    const LogoFacebook(),
+                    () {
+                      afficherMessage('Connexion Facebook à venir');
+                    },
+                  ),
+
+                  const SizedBox(height: 65),
+
+                  // CREER UN COMPTE
+                  Center(
+                    child: Wrap(
+                      alignment: WrapAlignment.center,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        const Text(
+                          'Pas encore de compte ?',
+                          style: TextStyle(color: texteGris, fontSize: 14),
+                        ),
+
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const InscriptionPage(),
+                              ),
+                            );
+                          },
+                          child: const Text(
+                            'Créer un compte',
+                            style: TextStyle(
+                              color: jaunePrincipal,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-// ==================================
-// LOGO GOOGLE (dessine en code)
-// ==================================
+// =====================================
+// LOGO GOOGLE EN SVG
+// =====================================
 
 class LogoGoogle extends StatelessWidget {
   const LogoGoogle({super.key});
 
+  static const String logo = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path fill="#4285F4" d="M21.35 11.1H12v3.8h5.35c-.23 1.2-.91 2.22-1.94 2.9v2.42h3.14c1.84-1.7 2.9-4.2 2.9-7.2 0-.64-.06-1.25-.1-1.92z"/>
+  <path fill="#34A853" d="M12 22c2.7 0 4.97-.9 6.63-2.44l-3.14-2.42c-.87.58-1.98.93-3.49.93-2.68 0-4.95-1.8-5.76-4.22H2.99v2.49C4.64 19.6 8.04 22 12 22z"/>
+  <path fill="#FBBC05" d="M6.24 13.85A5.94 5.94 0 0 1 5.93 12c0-.64.11-1.27.31-1.85V7.66H2.99A9.98 9.98 0 0 0 2 12c0 1.61.38 3.13.99 4.34l3.25-2.49z"/>
+  <path fill="#EA4335" d="M12 5.93c1.54 0 2.92.53 4.01 1.58l3.01-3.01C17.2 2.8 14.81 2 12 2 8.04 2 4.64 4.4 2.99 7.66l3.25 2.49C7.05 7.73 9.32 5.93 12 5.93z"/>
+</svg>
+''';
+
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 24,
-      height: 24,
-      child: CustomPaint(painter: _GooglePainter()),
-    );
+    return SvgPicture.string(logo, width: 25, height: 25);
   }
 }
 
-class _GooglePainter extends CustomPainter {
-  const _GooglePainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double epaisseur = size.width * 0.22;
-    final Rect cercle = Rect.fromCircle(
-      center: size.center(Offset.zero),
-      radius: (size.width - epaisseur) / 2,
-    );
-
-    double rad(double degres) => degres * math.pi / 180;
-
-    void arc(Color couleur, double debut, double balayage) {
-      canvas.drawArc(
-        cercle,
-        rad(debut),
-        rad(balayage),
-        false,
-        Paint()
-          ..color = couleur
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = epaisseur,
-      );
-    }
-
-    arc(const Color(0xFFEA4335), 215, 105); // rouge (haut)
-    arc(const Color(0xFFFBBC05), 140, 75); // jaune (gauche)
-    arc(const Color(0xFF34A853), 48, 94); // vert (bas)
-    arc(const Color(0xFF4285F4), 0, 50); // bleu (droite)
-
-    // Barre horizontale bleue du G
-    canvas.drawRect(
-      Rect.fromLTWH(
-        size.width / 2,
-        size.height / 2 - epaisseur / 2,
-        size.width / 2 - 0.5,
-        epaisseur,
-      ),
-      Paint()..color = const Color(0xFF4285F4),
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-// ==================================
-// LOGO FACEBOOK (dessine en code)
-// ==================================
+// =====================================
+// LOGO FACEBOOK EN SVG
+// =====================================
 
 class LogoFacebook extends StatelessWidget {
   const LogoFacebook({super.key});
 
+  static const String logo = '''
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="12" fill="#1877F2"/>
+  <path fill="#FFFFFF" d="M14.2 21v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.4v2H8V13h2.8v8z"/>
+</svg>
+''';
+
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
-      width: 24,
-      height: 24,
-      child: CustomPaint(painter: _FacebookPainter()),
-    );
+    return SvgPicture.string(logo, width: 25, height: 25);
   }
-}
-
-class _FacebookPainter extends CustomPainter {
-  const _FacebookPainter();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    // On dessine dans une grille de 24 x 24.
-    canvas.scale(size.width / 24, size.height / 24);
-
-    canvas.drawCircle(
-      const Offset(12, 12),
-      12,
-      Paint()..color = const Color(0xFF1877F2),
-    );
-
-    final Path f = Path()
-      ..moveTo(13.2, 24)
-      ..lineTo(13.2, 14.6)
-      ..lineTo(15.4, 14.6)
-      ..lineTo(15.9, 11.5)
-      ..lineTo(13.2, 11.5)
-      ..lineTo(13.2, 9.6)
-      ..cubicTo(13.2, 8.7, 13.6, 8.1, 14.7, 8.1)
-      ..lineTo(16, 8.1)
-      ..lineTo(16, 5.5)
-      ..cubicTo(15.5, 5.4, 14.7, 5.3, 13.9, 5.3)
-      ..cubicTo(11.9, 5.3, 10.4, 6.6, 10.4, 9)
-      ..lineTo(10.4, 11.5)
-      ..lineTo(8, 11.5)
-      ..lineTo(8, 14.6)
-      ..lineTo(10.4, 14.6)
-      ..lineTo(10.4, 24)
-      ..close();
-
-    canvas.drawPath(f, Paint()..color = Colors.white);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
